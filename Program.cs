@@ -44,8 +44,7 @@ public class Program
         await sendEndpoint.Send(new TestMessage { Id = "message 1" });
         await sendEndpoint.Send(new TestMessage { Id = "message 2" });
 
-        Console.ReadLine();
-        await host.StopAsync();
+        await host.WaitForShutdownAsync();
     }
 }
 
@@ -64,7 +63,9 @@ public class TestConsumer : IConsumer<TestMessage>
 
         await Task.Delay(TimeSpan.FromSeconds(5));
 
-        throw new Exception();
+        if (!context.ReceiveContext.Redelivered) { 
+            throw new Exception();
+        }
     }
 }
 
